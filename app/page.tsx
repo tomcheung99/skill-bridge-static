@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { skills, findSkill } from '@/lib/skills';
+import { skills, findSkill, getRecommendations, extractSkillsFromText } from '@/lib/skills';
 import { ExtractedSkill, Recommendation } from '@/types';
 
 export default function Home() {
@@ -12,43 +12,49 @@ export default function Home() {
   const [extractedSkills, setExtractedSkills] = useState<ExtractedSkill[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [matchedSkill, setMatchedSkill] = useState<typeof skills[0] | null>(null);
+  const [error, setError] = useState('');
 
   const handleManualSubmit = async () => {
     if (!selectedSkill) return;
     setLoading(true);
+    setError('');
     
-    const skill = findSkill(selectedSkill);
-    if (skill) {
-      setMatchedSkill(skill);
-      const response = await fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skill: selectedSkill }),
-      });
-      const data = await response.json();
-      setRecommendations(data.recommendations || []);
+    try {
+      const skill = findSkill(selectedSkill);
+      if (skill) {
+        setMatchedSkill(skill);
+        // 直接調用函數，不使用 API（靜態導出不支持 API routes）
+        const recs = getRecommendations(skill.id);
+        setRecommendations(recs);
+      }
+    } catch (err) {
+      setError('分析失敗，請重試');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const handleTextSubmit = async () => {
     if (!text.trim()) return;
     setLoading(true);
+    setError('');
     
-    const response = await fetch('/api/recommend', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    const data = await response.json();
-    
-    if (data.extractedSkills) {
-      setExtractedSkills(data.extractedSkills);
-      setRecommendations(data.recommendations || []);
+    try {
+      // 直接調用函數，不使用 API
+      const extracted = extractSkillsFromText(text);
+      setExtractedSkills(extracted);
+      
+      if (extracted.length > 0) {
+        const recs = getRecommendations(extracted[0].id);
+        setRecommendations(recs);
+      }
+    } catch (err) {
+      setError('提取技能失敗，請重試');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const getCategoryColor = (category: string) => {
@@ -92,6 +98,12 @@ export default function Home() {
           </button>
         ))}
       </div>
+
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-8 text-red-200">
+          {error}
+        </div>
+      )}
 
       {/* Manual Mode */}
       {mode === 'manual' && (

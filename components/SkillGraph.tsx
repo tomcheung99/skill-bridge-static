@@ -12,7 +12,8 @@ import ReactFlow, {
   NodeProps,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { skills, edges, Skill } from '@/lib/skills';
+import { skills, edges } from '@/lib/skills';
+import { Skill } from '@/types';
 
 // Linear-style color palette
 const categoryColors: Record<string, string> = {

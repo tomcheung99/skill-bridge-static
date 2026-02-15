@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { skills, findSkill, ExtractedSkill, Recommendation } from '@/lib/skills';
+import { skills, findSkill } from '@/lib/skills';
+import { ExtractedSkill, Recommendation } from '@/types';
 
 export default function Home() {
   const [mode, setMode] = useState<'manual' | 'linkedin' | 'pdf' | 'text'>('manual');

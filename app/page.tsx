@@ -77,6 +77,12 @@ export default function Home() {
         <p className="text-xl text-slate-300">
           技能遷移圖譜 — 用 AI 類比降低跨學科學習門檻
         </p>
+        <a
+          href="/graph"
+          className="inline-block mt-4 px-6 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-full border border-cyan-500/50 transition"
+        >
+          🕸️ 查看技能圖譜
+        </a>
       </header>
 
       {/* Mode Selection */}

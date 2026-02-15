@@ -14,33 +14,36 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { skills, edges, Skill } from '@/lib/skills';
 
-// 類別顏色映射
+// Linear-style color palette
 const categoryColors: Record<string, string> = {
-  Technical: '#3b82f6', // blue-500
-  Creative: '#ec4899',  // pink-500
-  Analytical: '#10b981', // emerald-500
-  Social: '#f97316',     // orange-500
-  Business: '#8b5cf6',   // purple-500
+  Technical: '#8b5cf6',   // violet-500
+  Creative: '#ec4899',    // pink-500
+  Analytical: '#10b981',  // emerald-500
+  Social: '#f59e0b',      // amber-500
+  Business: '#3b82f6',    // blue-500
 };
 
-// 自定義節點組件
+// Custom node component
 function SkillNode({ data, selected }: NodeProps<Skill>) {
+  const color = categoryColors[data.category];
+  
   return (
     <div
-      className={`px-4 py-2 rounded-lg border-2 transition-all cursor-pointer ${
-        selected ? 'border-white shadow-lg scale-110' : 'border-transparent'
+      className={`px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+        selected ? 'scale-110' : 'hover:scale-105'
       }`}
       style={{
-        backgroundColor: `${categoryColors[data.category]}20`,
-        borderColor: selected ? categoryColors[data.category] : 'transparent',
-        boxShadow: selected ? `0 0 20px ${categoryColors[data.category]}50` : 'none',
+        backgroundColor: selected ? `${color}30` : `${color}15`,
+        border: `1px solid ${selected ? color : `${color}40`}`,
+        boxShadow: selected ? `0 0 20px ${color}40` : 'none',
       }}
     >
-      <div className="text-white font-semibold text-sm text-center">{data.name}</div>
-      <div className="text-xs text-slate-300 text-center mt-1">{data.category}</div>
-      <div className="flex justify-center mt-1">
+      <div className="text-white font-medium text-xs text-center truncate max-w-[100px]">
+        {data.name}
+      </div>
+      <div className="flex justify-center mt-1 gap-0.5">
         {Array.from({ length: data.level }).map((_, i) => (
-          <span key={i} className="text-xs">★</span>
+          <span key={i} className="text-[8px]" style={{ color }}>★</span>
         ))}
       </div>
     </div>
@@ -62,7 +65,6 @@ export default function SkillGraph({
   highlightSkill,
   relatedSkills = [] 
 }: SkillGraphProps) {
-  // 計算節點位置（力導向佈局）
   const initialNodes: Node<Skill>[] = useMemo(() => {
     const nodes: Node<Skill>[] = [];
     const categories = [...new Set(skills.map(s => s.category))];
@@ -74,7 +76,6 @@ export default function SkillGraph({
       const baseAngle = angleStep * catIndex;
       const radius = 300;
       
-      // 類別中心點
       const centerX = Math.cos(baseAngle) * radius;
       const centerY = Math.sin(baseAngle) * radius;
       
@@ -92,7 +93,7 @@ export default function SkillGraph({
           data: skill,
           style: {
             opacity: highlightSkill 
-              ? (skill.id === highlightSkill || relatedSkills.includes(skill.id) ? 1 : 0.3)
+              ? (skill.id === highlightSkill || relatedSkills.includes(skill.id) ? 1 : 0.2)
               : 1,
           },
         });
@@ -102,7 +103,6 @@ export default function SkillGraph({
     return nodes;
   }, [highlightSkill, relatedSkills]);
 
-  // 創建連接
   const initialEdges: Edge[] = useMemo(() => {
     const edgeList: Edge[] = [];
     
@@ -117,22 +117,23 @@ export default function SkillGraph({
           target: edge.to,
           animated: isHighlighted,
           style: {
-            stroke: isHighlighted ? '#22d3ee' : '#64748b',
-            strokeWidth: isHighlighted ? 3 : 1,
+            stroke: isHighlighted ? '#a78bfa' : '#3f3f46',
+            strokeWidth: isHighlighted ? 2 : 1,
             opacity: highlightSkill 
               ? (isHighlighted || isRelated ? 1 : 0.1)
-              : 0.5,
+              : 0.3,
           },
           label: `${edge.similarity}%`,
           labelStyle: {
-            fill: isHighlighted ? '#22d3ee' : '#94a3b8',
-            fontSize: 10,
+            fill: isHighlighted ? '#a78bfa' : '#71717a',
+            fontSize: 9,
+            fontWeight: 500,
           },
           labelBgStyle: {
-            fill: '#0f172a',
+            fill: '#0a0a0f',
           },
-          labelBgPadding: [4, 4],
-          labelBgBorderRadius: 4,
+          labelBgPadding: [3, 3],
+          labelBgBorderRadius: 3,
         });
       });
     });
@@ -150,7 +151,7 @@ export default function SkillGraph({
   };
 
   return (
-    <div className="w-full h-[600px] bg-slate-900/50 rounded-xl border border-slate-700">
+    <div className="w-full h-[600px] relative">
       <ReactFlow
         nodes={nodes}
         edges={flowEdges}
@@ -163,30 +164,37 @@ export default function SkillGraph({
         minZoom={0.3}
         maxZoom={2}
       >
-        <Background color="#1e293b" gap={20} size={1} />
-        <Controls className="bg-slate-800 border-slate-600" />
+        <Background color="#27272a" gap={40} size={1} />
+        <Controls 
+          className="!bg-[#0a0a0f] !border-white/[0.08] !shadow-none"
+          showInteractive={false}
+        />
         <MiniMap
-          nodeColor={(node) => categoryColors[node.data?.category] || '#64748b'}
-          className="bg-slate-800 border-slate-600 rounded-lg"
-          maskColor="#0f172a80"
+          nodeColor={(node) => categoryColors[node.data?.category] || '#3f3f46'}
+          className="!bg-[#0a0a0f] !border-white/[0.08] !rounded-lg"
+          maskColor="#0a0a0f80"
+          maskStrokeColor="#8b5cf6"
+          maskStrokeWidth={2}
         />
       </ReactFlow>
       
-      {/* 圖例 */}
-      <div className="absolute bottom-4 left-4 bg-slate-800/90 backdrop-blur p-4 rounded-lg border border-slate-600">
-        <h4 className="text-white font-semibold mb-2 text-sm">技能類別</h4>
-        {Object.entries(categoryColors).map(([category, color]) => (
-          <div key={category} className="flex items-center gap-2 mb-1">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-            <span className="text-slate-300 text-xs">{category}</span>
-          </div>
-        ))}
-        <div className="mt-3 text-xs text-slate-400">
-          <div>★ = 難度等級 (1-5)</div>
-          <div className="mt-1">點擊節點查看詳情</div>
+      {/* Legend */}
+      <div className="absolute bottom-4 left-4 bg-[#0a0a0f]/90 backdrop-blur p-4 rounded-xl border border-white/[0.08]"
+      >
+        <h4 className="text-white font-medium mb-3 text-sm">技能類別</h4>
+        <div className="space-y-2">
+          {Object.entries(categoryColors).map(([category, color]) => (
+            <div key={category} className="flex items-center gap-2">
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-zinc-400 text-xs">{category}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-3 border-t border-white/[0.06] text-[10px] text-zinc-500">
+          <div>★ 難度等級 (1-5)</div>
         </div>
       </div>
     </div>

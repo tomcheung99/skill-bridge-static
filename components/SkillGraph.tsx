@@ -68,7 +68,7 @@ export default function SkillGraph({
 }: SkillGraphProps) {
   const initialNodes: Node<Skill>[] = useMemo(() => {
     const nodes: Node<Skill>[] = [];
-    const categories = [...new Set(skills.map(s => s.category))];
+    const categories = Array.from(new Set(skills.map(s => s.category)));
     const skillsPerCategory = categories.map(cat => skills.filter(s => s.category === cat));
     
     categories.forEach((category, catIndex) => {

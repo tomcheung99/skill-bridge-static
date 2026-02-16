@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Subscription
+  subscription  Subscription?
+  
+  // Skill assessments
+  assessments   Assessment[]
+  
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  status    String   // active, canceled, past_due
+  priceId   String   // Stripe price ID
+  quantity  Int      @default(1)
+  
+  cancelAtPeriodEnd Boolean @default(false)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  stripeCustomerId       String?
+  stripeSubscriptionId   String?
+}
+
+model Assessment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  inputType String   // manual, text, linkedin, pdf
+  inputData String?  // stored text/resume
+  
+  // Results
+  detectedSkills Json[] // Array of {skillId, confidence, name}
+  recommendations Json[] // Array of recommendations
+  
+  createdAt DateTime @default(now())
+}
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?  // where they came from
+  createdAt DateTime @default(now())
+}

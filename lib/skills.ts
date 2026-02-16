@@ -222,11 +222,6 @@ export const edges: Record<string, SkillEdge[]> = {
     { from: 'video-production', to: 'photography', similarity: 75, analogy: '視頻是每秒 24 張照片。攝影的構圖、光線和顏色知識完全適用於視頻。', path: ['電影攝影', '燈光技巧', '色彩分級'] },
     { from: 'video-production', to: 'storytelling', similarity: 70, analogy: '好的視頻需要好的故事。技術只是工具，敘事才是靈魂。', path: ['劇本寫作', '剪輯節奏', '聲音設計'] },
   ],
-  
-  // ===== UI 設計相關路徑 =====
-  'ui-design': [
-    { from: 'ui-design', to: 'product-management', similarity: 78, analogy: 'UI 設計是「做對的界面」，產品管理是「選對的功能做」。從「執行層」上升到「決策層」，思維模式是連續的。', path: ['用戶研究', '優先級', '指標'] },
-  ],
 };
 
 export const skillKeywords: Record<string, string[]> = {

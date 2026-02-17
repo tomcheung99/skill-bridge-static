@@ -79,7 +79,7 @@ export default function Dashboard() {
               </div>
               <span className="text-sm text-zinc-400">潛在薪資提升</span>
             </div>
-            <div className="text-3xl font-bold">-{</div>
+            <div className="text-3xl font-bold">-</div>
             <p className="text-xs text-zinc-500 mt-1">完成評估查看預測</p>
           </div>
 
@@ -92,7 +92,7 @@ export default function Dashboard() {
               </div>
               <span className="text-sm text-zinc-400">預計學習時間</span>
             </div>
-            <div className="text-3xl font-bold">-{</div>
+            <div className="text-3xl font-bold">-</div>
             <p className="text-xs text-zinc-500 mt-1">完成評估查看</p>
           </div>
 
@@ -105,7 +105,7 @@ export default function Dashboard() {
               </div>
               <span className="text-sm text-zinc-400">匹配職位</span>
             </div>
-            <div className="text-3xl font-bold">-{</div>
+            <div className="text-3xl font-bold">-</div>
             <p className="text-xs text-zinc-500 mt-1">完成評估查看</p>
           </div>
         </div>

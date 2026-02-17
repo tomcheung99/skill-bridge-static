@@ -70,7 +70,7 @@ model Subscription {
   updatedAt DateTime @updatedAt
   
   stripeCustomerId       String?
-  stripeSubscriptionId   String?
+  stripeSubscriptionId   String?  @unique
 }
 
 model Assessment {

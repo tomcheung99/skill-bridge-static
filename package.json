@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -19,7 +19,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "reactflow": "^11.11.4",
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "prisma": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
